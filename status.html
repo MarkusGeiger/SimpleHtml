@@ -1,0 +1,96 @@
+<html>
+
+<head>
+
+</head>
+
+<body>
+  <script>
+    function chk(target, times, delay) {
+      return new Promise((res, rej) => {                       // return a promise
+
+        (function rec(i) {                                   // recursive IIFE
+          fetch(target, { mode: 'no-cors' }).then((r) => {   // fetch the resourse
+          // fetch(target/*, { mode: 'no-cors' }*/).then((r) => {   // fetch the resourse
+            console.log("fetched "+target, r.status);
+            res(r);                                      // resolve promise if success
+          }).catch(err => {
+            if (times === 0)                             // if number of tries reached
+              return rej(err);                         // don't try again
+
+            setTimeout(() => rec(--times), delay)       // otherwise, wait and try 
+          });                                              // again until no more tries
+        })(times);
+
+      });
+    }
+
+    var t = "https://i.stack.imgur.com/Ya15i.jpg";
+
+    window.onload = function() {
+      ping(t, "dummy image");
+      ping("https://floof-tracker.herokuapp.com", "Heroku");
+      ping("https://flooftracker.herokuapp.com", "Heroku Wrong");
+      ping("https://floof.uber.space", "Uberspace");
+      ping("http://raspberrypi.local:8123", "HomeAssistant", true);
+      ping("http://raspberrypi.local:8129", "Dummy", true);
+      //ping(t, "dummy image");
+    }
+
+    function generateImage(src, alt){
+      var elem = document.createElement("img");
+      elem.setAttribute("src", src);
+      elem.setAttribute("alt", alt);
+      elem.setAttribute("style", "margin: 4px;");
+      var div = document.createElement("div");
+      document.getElementById("placehere").appendChild(div).appendChild(elem);
+    }
+
+    function ping(url, name, prefix = false){
+      var outerDiv = document.createElement("div");
+      //var div = document.createElement("span");
+      var a = document.createElement("a");
+      //a.appendChild(div);
+      outerDiv.appendChild(a);
+      if(prefix){
+        var prefixElem = document.createElement("img");
+        prefixElem.setAttribute("height", "28px");
+        prefixElem.setAttribute("src", "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAPAAAADwCAMAAAAJixmgAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAB8lBMVEVRK9T6+f7////5+P1oR9pjQdi7re5UL9XY0PWOdePGufHPxPONdOPv7PtdOde5qu7+/v96Xd7k3/hWMdWlkelsS9vd1ffa0va7rO6AZOD8/P7h2vismuvTyvRSLNRfPNfw7ftyU9yQeOTy7/xfPNj8+/69ru+zo+z39v1+Yt+1pO24qe3CtfColerLwPKmkulsTNvOw/NVMNXi3PjVy/XRxvR3Wt3+/f+UfOW5qe7z8PxgPdjWzfVbN9bt6frAs+/Z0faKcOLJvfLp5PpZNNb18/ysmuqbhuZxUtxSLdTXz/VwUNyXgeW3qO2yoeyxn+z18/3k3vjEt/B8X9+Ga+G9r+/r5vpZNdZdOtevnuuPd+NyVNzb0/ZTLdVmRdn39f2bheagi+j29P1kQtl9Yd/c1fbHu/GHbeGxoOzr5/paNtZYM9bo4/mzouyDaOD9/f50Vt1hP9jg2fdULtVeO9fx7vyeief49/1oRtpWMtXTyfRqStr6+P6GbOHe1/fZ0Pa2pu3s6PpXMtaBZeCTfOSOduNuTtuEaeGkkOjc1PZ3Wd1iQNj08vyZg+aReeSjj+hnRtmZguZ5W97m4fmql+p4Wt7m4Pnj3fi1pe17X97Asu9bN9ft6fvu6vvQxvOVfeWXgOWIbuF2WN2Te+SMc+NhPtjUabS2AAAAAWJLR0QCZgt8ZAAAAAd0SU1FB+YHCBENK3+r6IoAAAL3SURBVHja7dr5N1QBGIfx1y1pbwqFGGlfpNImUUrbtGqlpE1RaVfaaNO+a9/3/s/MObx3inBVdO/7fH6bzXyfM865d1wiAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPA3xTmqT9+Onhivz+sXe3eC04n+0WcNcDwY2FPBziBrwc5ga8FDhhoLdoZZCw4NNxbsjEg0FuwkWQuOS+528MhR7UmJPiu1zd1p+rLRvz6U3qPBTka4u8GZXt53jL4sq9fOtFqMtRY8bryN4Am6YKKN4EmT9WA8xUTw1GkdH4wDF5wdrx+xM91CcI7McA/GMw0Ez5Lc2TpiTjj4wXNF5s3XFXnBD85ovrFAV+QvDHxwQfONwkU6Y3Hgg4uit5a481NNBMtS3VG8zERw/HIdssJEsKzUIWmrTARHVuuSooiFYFnjfm1a6y143fq2Nvz/wZKuU0ri//hvWiEfBCdu1C2bTATL5pCO2WIiWLbqmG2lJoLL3DXbTQTLDvdgXG4iWHJ0zs4KE8G7duuePSaCZa/u2VfZ1eD95W1l+SW44oAOqgr4qWWLVe7VrmoTwXJQFx06bCK45ohOOmoiWI7ppOMnmm+eDHywZOumU7Uip4MfnHlGR9WJFAY/WPJ01Nlzct5AcPiC4155qjAQLBfrdVaD1BsIliT3m3FNsYXg2kvuNePLFoJjLijWbzQRLFfafuULdnDhVT8HX2u8fuOmt2C55d/gyO2S6BvcuespWKr8GhwZ2PovKw2egu/d72Lwg4ftK+2l4EfuieJjL8HS1MXg3+nbO8G5MR/UOk/BkQJfBj+JmfDUU7Akx/kxuDpmQom3YHnmx+DnMRNeeAxOfOnD4IR8d8Irj8HyOuS/YKlzf6MrvQZLig+Dw29aj0qN4jn47Tv/BUu46X30as+HNbF3fvzU4nPHL/7ySW3+6Yd+7VS7Jx7f9OGyf3guHSlvSP0uAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAaN8PWafIDgBP32wAAAAldEVYdGRhdGU6Y3JlYXRlADIwMjItMDctMDhUMTc6MTM6NDMrMDA6MDBkhiz8AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDIyLTA3LTA4VDE3OjEzOjQzKzAwOjAwFduUQAAAAABJRU5ErkJggg==");
+        a.appendChild(prefixElem);
+      }
+      var elem = document.createElement("img");
+      elem.setAttribute("src", generateSrcUrl(name, "pending"));
+      elem.setAttribute("alt", name + "-badge");
+      elem.setAttribute("style", "margin: 4px;");
+      a.appendChild(elem);
+
+      document.getElementById("placehere").appendChild(outerDiv);
+
+      chk(url, 3, 100).then(image => {
+        console.log("ping url '"+url+"': success", image);
+        //generateImage(generateSrcUrl(name, "online"), name);
+        elem.setAttribute("src", generateSrcUrl(name, "online"));
+        a.setAttribute("href", url);
+      }).catch(err => {
+        console.log("ping url '"+url+"': error", err);
+        // document.getElementById(id).src = generateSrcUrl(name, false);
+        //generateImage(generateSrcUrl(name, "offline"), name);
+        elem.setAttribute("src", generateSrcUrl(name, "offline"));
+      });
+    }
+
+    function generateSrcUrl(label, state) {
+      let color = state == "online" ? "success" : (state == "offline" ? "critical" : "inactive");
+      // let color = state ? "success" : "critical"; //GrafanaColor => F46800
+      // let message = state ? "online" : "offline";
+      return "https://img.shields.io/badge/" + label + "-" + state + "-" + color + "?logo=microsoftedge&style=for-the-badge"
+      // return "https://img.shields.io/badge/" + label + "-" + state + "-" + color + "?logo=Grafana&style=flat-square"
+    }
+  </script>
+
+  <img height="28px" src="data:image/png;base64,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"/>
+  <img id="grafana-badge" alt="grafanaBadge" src="https://img.shields.io/badge/label-message-F46800?logo=Grafana&style=flat-square" style="margin: 4px;"/>
+  <div id="placehere"></div>
+</body>
+
+</html>
